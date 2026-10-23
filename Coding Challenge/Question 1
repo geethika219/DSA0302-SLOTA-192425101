@@ -1,0 +1,35 @@
+import re
+
+# Step 1: Give the input directly in the program
+input_data = """4
+The dog's tail wagged -- twice!
+state-of-the-art NLP systems, circa 2026.
+12345 ... ???
+Don't re-use rock--roll O'Neill's x"""
+
+# Step 2: Split the input into lines
+lines = input_data.splitlines()
+
+# Step 3: Read the number of lines
+N = int(lines[0])
+
+# Step 4: Define the regular expression
+pattern = r"[A-Za-z]+(?:['-][A-Za-z]+)*"
+
+# Step 5: Process each line
+for i in range(1, N + 1):
+
+    # Get the current line
+    line = lines[i]
+
+    # Find all word tokens
+    tokens = re.findall(pattern, line)
+
+    # Count the tokens
+    count = len(tokens)
+
+    # Step 6: Print the output
+    if count > 0:
+        print(count, *tokens)
+    else:
+        print(0)
