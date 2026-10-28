@@ -1,0 +1,163 @@
+# Inflectional Morphology Generator
+# Input is included inside the program
+
+# Step 1: Sample input
+input_data = """3
+goose N+PL geese
+go V+PAST went
+good ADJ+COMP better
+8
+cat N+PL
+church N+PL
+baby N+PL
+stop V+PROG
+make V+PROG
+carry V+PAST
+goose N+PL
+go V+PAST"""
+
+# Step 2: Read the input
+lines = input_data.strip().splitlines()
+index = 0
+
+# Step 3: Read irregular lexicon entries
+L = int(lines[index])
+index += 1
+
+lexicon = {}
+
+for _ in range(L):
+    stem, feature, form = lines[index].split()
+    lexicon[(stem, feature)] = form
+    index += 1
+
+# Step 4: Read the number of queries
+Q = int(lines[index])
+index += 1
+
+vowels = "aeiou"
+
+# Step 5: Count vowel groups
+def count_vowel_groups(word):
+    count = 0
+    inside_vowel_group = False
+
+    for ch in word:
+        if ch in vowels:
+            if not inside_vowel_group:
+                count += 1
+            inside_vowel_group = True
+        else:
+            inside_vowel_group = False
+
+    return count
+
+# Step 6: Check whether the stem is doublable
+def is_doublable(word):
+    if len(word) < 3:
+        return False
+
+    # Last three letters must be consonant-vowel-consonant
+    last_three = word[-3:]
+
+    if not (
+        last_three[0] not in vowels
+        and last_three[1] in vowels
+        and last_three[2] not in vowels
+    ):
+        return False
+
+    # Final letter must not be w, x, or y
+    if word[-1] in "wxy":
+        return False
+
+    # Exactly one vowel group is required
+    if count_vowel_groups(word) != 1:
+        return False
+
+    return True
+
+# Step 7: Generate the inflected form
+def generate_form(stem, feature):
+
+    # Irregular forms have priority
+    if (stem, feature) in lexicon:
+        return lexicon[(stem, feature)]
+
+    # Rule set A: Plural nouns and third-person singular verbs
+    if feature in ("N+PL", "V+3SG"):
+
+        if stem.endswith(("s", "x", "z", "ch", "sh")):
+            return stem + "es"
+
+        elif len(stem) >= 2 and stem.endswith("o"):
+            if stem[-2] not in vowels:
+                return stem + "es"
+
+        if len(stem) >= 2 and stem.endswith("y"):
+            if stem[-2] not in vowels:
+                return stem[:-1] + "ies"
+
+        return stem + "s"
+
+    # Rule set B: Present participle (-ing)
+    elif feature == "V+PROG":
+
+        # Drop final e after a consonant when stem has
+        # at least three letters
+        if (
+            len(stem) >= 3
+            and stem.endswith("e")
+            and stem[-2] not in vowels
+        ):
+            return stem[:-1] + "ing"
+
+        # Double the final consonant if doublable
+        elif is_doublable(stem):
+            return stem + stem[-1] + "ing"
+
+        else:
+            return stem + "ing"
+
+    # Rule set C: Past tense, comparative, superlative
+    elif feature in ("V+PAST", "ADJ+COMP", "ADJ+SUP"):
+
+        # Select the suffix
+        if feature == "V+PAST":
+            suffix = "ed"
+        elif feature == "ADJ+COMP":
+            suffix = "er"
+        else:
+            suffix = "est"
+
+        # Rule C1: Stem ends in e
+        if stem.endswith("e"):
+            if suffix == "ed":
+                return stem + "d"
+            elif suffix == "er":
+                return stem + "r"
+            else:
+                return stem + "st"
+
+        # Rule C2: Consonant followed by y
+        elif len(stem) >= 2 and stem.endswith("y"):
+            if stem[-2] not in vowels:
+                return stem[:-1] + "i" + suffix
+
+        # Rule C3: Double the final consonant
+        if is_doublable(stem):
+            return stem + stem[-1] + suffix
+
+        # Rule C4: Add the suffix
+        return stem + suffix
+
+    # Return the stem unchanged for an unsupported feature
+    return stem
+
+# Step 8: Process all queries
+for _ in range(Q):
+    stem, feature = lines[index].split()
+    index += 1
+
+    result = generate_form(stem, feature)
+    print(result)
