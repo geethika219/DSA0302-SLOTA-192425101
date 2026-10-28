@@ -1,0 +1,160 @@
+# Porter Stemmer - Step 1
+# Step 1a, Step 1b, and Step 1c
+# Sample input is included in the program
+
+# Step 1: Input words
+input_data = """8
+caresses
+ponies
+cats
+feed
+agreed
+motoring
+hopping
+happy"""
+
+# Step 2: Read input
+lines = input_data.strip().splitlines()
+Q = int(lines[0])
+words = lines[1:Q + 1]
+
+vowels = "aeiou"
+
+# Step 3: Check whether a letter is a consonant
+def is_consonant(word, i):
+    ch = word[i]
+
+    if ch in vowels:
+        return False
+
+    if ch == 'y':
+        if i == 0:
+            return True
+        return not is_consonant(word, i - 1)
+
+    return True
+
+# Step 4: Calculate the measure m of a word
+def measure(word):
+    m = 0
+    previous_vowel = False
+
+    for i in range(len(word)):
+        consonant = is_consonant(word, i)
+
+        if previous_vowel and consonant:
+            m += 1
+
+        previous_vowel = not consonant
+
+    return m
+
+# Step 5: Check whether the word contains a vowel
+def has_vowel(word):
+    for i in range(len(word)):
+        if not is_consonant(word, i):
+            return True
+    return False
+
+# Step 6: Check double consonant at the end
+def double_consonant(word):
+    if len(word) < 2:
+        return False
+
+    return (
+        word[-1] == word[-2]
+        and is_consonant(word, len(word) - 1)
+    )
+
+# Step 7: Check the *o condition
+def cvc(word):
+    if len(word) < 3:
+        return False
+
+    n = len(word)
+
+    return (
+        is_consonant(word, n - 3)
+        and not is_consonant(word, n - 2)
+        and is_consonant(word, n - 1)
+        and word[-1] not in "wxy"
+    )
+
+# Step 8: Apply Porter Step 1a
+def step1a(word):
+    if word.endswith("sses"):
+        return word[:-2]
+
+    elif word.endswith("ies"):
+        return word[:-2]
+
+    elif word.endswith("ss"):
+        return word
+
+    elif word.endswith("s"):
+        return word[:-1]
+
+    return word
+
+# Step 9: Apply Porter Step 1b
+def step1b(word):
+    # Rule 1: eed -> ee if measure of stem > 0
+    if word.endswith("eed"):
+        stem = word[:-3]
+
+        if measure(stem) > 0:
+            return stem + "ee"
+
+        return word
+
+    # Rule 2: Remove ed if stem contains a vowel
+    if word.endswith("ed"):
+        stem = word[:-2]
+
+        if has_vowel(stem):
+            word = stem
+        else:
+            return word
+
+    # Rule 3: Remove ing if stem contains a vowel
+    elif word.endswith("ing"):
+        stem = word[:-3]
+
+        if has_vowel(stem):
+            word = stem
+        else:
+            return word
+
+    else:
+        return word
+
+    # Cleanup after removing ed or ing
+    if word.endswith(("at", "bl", "iz")):
+        return word + "e"
+
+    if double_consonant(word):
+        if word[-1] not in "lsz":
+            return word[:-1]
+
+    if measure(word) == 1 and cvc(word):
+        return word + "e"
+
+    return word
+
+# Step 10: Apply Porter Step 1c
+def step1c(word):
+    if word.endswith("y"):
+        stem = word[:-1]
+
+        if has_vowel(stem):
+            return stem + "i"
+
+    return word
+
+# Step 11: Process all words
+for word in words:
+    word = step1a(word)
+    word = step1b(word)
+    word = step1c(word)
+
+    print(word)
