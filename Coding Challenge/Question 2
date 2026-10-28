@@ -1,0 +1,101 @@
+# Non-Deterministic Finite State Automaton (NFA)
+# Check whether each input string is ACCEPT or REJECT
+
+# Step 1: Give the input directly in the program
+input_data = """5 3
+b a !
+0
+1 4
+5
+0 b 1
+1 a 2
+2 a 3
+3 a 3
+3 ! 4
+5
+baa!
+baaa!
+ba!
+b
+baa"""
+
+# Step 2: Read the input lines
+lines = input_data.splitlines()
+index = 0
+
+# Step 3: Read number of states and alphabet size
+n, k = map(int, lines[index].split())
+index += 1
+
+# Step 4: Read alphabet symbols
+alphabet = lines[index].split()
+index += 1
+
+# Step 5: Read the start state
+start_state = int(lines[index])
+index += 1
+
+# Step 6: Read accepting states
+data = list(map(int, lines[index].split()))
+index += 1
+m = data[0]
+final_states = set(data[1:1 + m])
+
+# Step 7: Create the transition table
+transitions = {}
+
+# Step 8: Read the number of transitions
+t = int(lines[index])
+index += 1
+
+# Step 9: Store all transitions
+for _ in range(t):
+    p, c, r = lines[index].split()
+    index += 1
+
+    key = (int(p), c)
+
+    if key not in transitions:
+        transitions[key] = set()
+
+    transitions[key].add(int(r))
+
+# Step 10: Read the number of query strings
+Q = int(lines[index])
+index += 1
+
+# Step 11: Process each query
+for _ in range(Q):
+    string = lines[index]
+    index += 1
+
+    # The symbol # represents the empty string
+    if string == "#":
+        string = ""
+
+    # Initially, the automaton is in the start state
+    current_states = {start_state}
+
+    # Read the string one character at a time
+    for symbol in string:
+        next_states = set()
+
+        # Check every currently possible state
+        for state in current_states:
+            key = (state, symbol)
+
+            if key in transitions:
+                next_states.update(transitions[key])
+
+        # Move to the next set of possible states
+        current_states = next_states
+
+        # Stop if no possible states remain
+        if not current_states:
+            break
+
+    # Accept if at least one final state is reached
+    if current_states & final_states:
+        print("ACCEPT")
+    else:
+        print("REJECT")
