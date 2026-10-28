@@ -1,0 +1,188 @@
+# Finite-State Morphological Parsing
+# Input is included inside the program
+
+import re
+
+# Step 1: Sample input
+input_data = """5
+cat N
+watch N
+watch V
+study V
+big ADJ
+8
+cats
+watches
+watching
+studied
+bigger
+cat
+biggest
+elephants"""
+
+# Step 2: Read input lines
+lines = input_data.strip().splitlines()
+index = 0
+
+# Step 3: Read the lexicon
+S = int(lines[index])
+index += 1
+
+lexicon = []
+
+for _ in range(S):
+    stem, pos = lines[index].split()
+    lexicon.append((stem, pos))
+    index += 1
+
+# Step 4: Read the number of surface forms
+Q = int(lines[index])
+index += 1
+
+# Step 5: Define vowels
+vowels = "aeiou"
+
+# Step 6: Count vowel groups
+def count_vowel_groups(word):
+    count = 0
+    in_group = False
+
+    for ch in word:
+        if ch in vowels:
+            if not in_group:
+                count += 1
+            in_group = True
+        else:
+            in_group = False
+
+    return count
+
+# Step 7: Check whether a stem is doublable
+def is_doublable(word):
+    if len(word) < 3:
+        return False
+
+    last_three = word[-3:]
+
+    if not (
+        last_three[0] not in vowels
+        and last_three[1] in vowels
+        and last_three[2] not in vowels
+    ):
+        return False
+
+    if word[-1] in "wxy":
+        return False
+
+    if count_vowel_groups(word) != 1:
+        return False
+
+    return True
+
+# Step 8: Generate possible forms from a stem
+def generate_forms(stem, pos):
+    forms = {}
+
+    if pos == "N":
+        features = ["PL"]
+    elif pos == "V":
+        features = ["3SG", "PROG", "PAST"]
+    else:
+        features = ["COMP", "SUP"]
+
+    for feature in features:
+        # Rule set A: Plural and third-person singular
+        if feature in ("PL", "3SG"):
+            if stem.endswith(("s", "x", "z", "ch", "sh")):
+                form = stem + "es"
+
+            elif (
+                len(stem) >= 2
+                and stem.endswith("o")
+                and stem[-2] not in vowels
+            ):
+                form = stem + "es"
+
+            elif (
+                len(stem) >= 2
+                and stem.endswith("y")
+                and stem[-2] not in vowels
+            ):
+                form = stem[:-1] + "ies"
+
+            else:
+                form = stem + "s"
+
+        # Rule set B: Present participle
+        elif feature == "PROG":
+            if (
+                len(stem) >= 3
+                and stem.endswith("e")
+                and stem[-2] not in vowels
+            ):
+                form = stem[:-1] + "ing"
+
+            elif is_doublable(stem):
+                form = stem + stem[-1] + "ing"
+
+            else:
+                form = stem + "ing"
+
+        # Rule set C: Past, comparative and superlative
+        else:
+            if feature == "PAST":
+                suffix = "ed"
+            elif feature == "COMP":
+                suffix = "er"
+            else:
+                suffix = "est"
+
+            if stem.endswith("e"):
+                if feature == "PAST":
+                    form = stem + "d"
+                elif feature == "COMP":
+                    form = stem + "r"
+                else:
+                    form = stem + "st"
+
+            elif (
+                len(stem) >= 2
+                and stem.endswith("y")
+                and stem[-2] not in vowels
+            ):
+                form = stem[:-1] + "i" + suffix
+
+            elif is_doublable(stem):
+                form = stem + stem[-1] + suffix
+
+            else:
+                form = stem + suffix
+
+        forms[form] = feature
+
+    return forms
+
+# Step 9: Build the morphological analyser
+analyser = {}
+
+for stem, pos in lexicon:
+    # A bare stem is also a valid analysis
+    analyser.setdefault(stem, set()).add(stem + "+" + pos)
+
+    generated = generate_forms(stem, pos)
+
+    for surface, feature in generated.items():
+        analysis = stem + "+" + pos + "+" + feature
+        analyser.setdefault(surface, set()).add(analysis)
+
+# Step 10: Parse each surface form
+for _ in range(Q):
+    surface = lines[index].strip()
+    index += 1
+
+    if surface in analyser and analyser[surface]:
+        # Sort analyses in ascending lexicographic order
+        results = sorted(analyser[surface])
+        print(", ".join(results))
+    else:
+        print("UNKNOWN")
