@@ -1,0 +1,68 @@
+from collections import Counter
+
+sentences = [
+    "<s> hello i need appointment </s>",
+    "<s> i need doctor </s>",
+    "<s> where is hospital </s>",
+    "<s> hello doctor </s>"
+]
+
+sentences = [s.split() for s in sentences]
+
+uni = Counter()
+bi = Counter()
+tri = Counter()
+
+for s in sentences:
+    uni.update(s)
+    bi.update(zip(s[:-1], s[1:]))
+    tri.update(zip(s[:-2], s[1:-1], s[2:]))
+
+total = sum(uni.values())
+
+def p1(w):
+    return uni[w] / total
+
+def p2(a, b):
+    return bi[(a,b)] / uni[a] if uni[a] else 0
+
+def p3(a, b, c):
+    context = sum(v for (x,y,z),v in tri.items()
+                  if x == a and y == b)
+
+    return tri[(a,b,c)] / context if context else 0
+
+# Linear interpolation
+
+l1 = 0.2
+l2 = 0.3
+l3 = 0.5
+
+def interpolation(a,b,c):
+    return (l1*p1(c) +
+            l2*p2(b,c) +
+            l3*p3(a,b,c))
+
+print("Interpolation Probability:",
+      interpolation("<s>", "hello", "i"))
+
+# Stupid Backoff
+
+def stupid_backoff(a,b,c):
+    if tri[(a,b,c)] > 0:
+        return p3(a,b,c)
+
+    elif bi[(b,c)] > 0:
+        return 0.4 * p2(b,c)
+
+    else:
+        return 0.16 * p1(c)
+
+print("Stupid Backoff Score:",
+      stupid_backoff("<s>", "hello", "doctor"))
+
+# Deleted interpolation example weights
+print("Lambda 1:", l1)
+print("Lambda 2:", l2)
+print("Lambda 3:", l3)
+print("Total:", l1+l2+l3)
