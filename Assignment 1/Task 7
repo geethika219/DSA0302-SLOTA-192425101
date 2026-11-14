@@ -1,0 +1,60 @@
+lexicon = {
+    "fracture": "Noun",
+    "patient": "Noun",
+    "diagnose": "Verb",
+    "treat": "Verb",
+    "medical": "Adjective",
+    "normal": "Adjective"
+}
+
+def morphological_parser(word):
+
+    word = word.lower()
+
+    if word in lexicon:
+        return word + " -> " + lexicon[word]
+
+    if word.endswith("s") and word[:-1] in lexicon:
+        return word + " -> " + word[:-1] + " + PL"
+
+    if word.endswith("ed") and word[:-2] in lexicon:
+        return word + " -> " + word[:-2] + " + PAST"
+
+    if word.endswith("ing") and word[:-3] in lexicon:
+        return word + " -> " + word[:-3] + " + ING"
+
+    return "No analysis found"
+
+
+words = [
+    "fracture",
+    "fractures",
+    "patients",
+    "diagnosed",
+    "treated"
+]
+
+for word in words:
+    print(morphological_parser(word))
+
+
+# Generation
+
+def generate(lemma, feature):
+
+    if feature == "PL":
+        return plural(lemma)
+
+    if feature == "PAST":
+        return lemma + "ed"
+
+    if feature == "ING":
+        return lemma + "ing"
+
+    return lemma
+
+
+print("\nGeneration:")
+print(generate("fracture", "PL"))
+print(generate("treat", "PAST"))
+print(generate("treat", "ING"))
