@@ -1,0 +1,58 @@
+import time
+import sys
+from collections import Counter
+
+corpus = [
+    "hello i need appointment",
+    "i need doctor",
+    "where is hospital",
+    "doctor is available today",
+    "please tell consultation fee"
+]
+
+start = time.time()
+
+unigram = Counter()
+bigram = Counter()
+trigram = Counter()
+
+for sentence in corpus:
+
+    words = ["<s>"] + sentence.split() + ["</s>"]
+
+    unigram.update(words)
+
+    bigram.update(
+        zip(words[:-1], words[1:])
+    )
+
+    trigram.update(
+        zip(words[:-2], words[1:-1], words[2:])
+    )
+
+training_time = time.time() - start
+
+print("Training Time:", training_time)
+
+print("\nUNIGRAM MODEL")
+print(unigram)
+
+print("\nBIGRAM MODEL")
+print(bigram)
+
+print("\nTRIGRAM MODEL")
+print(trigram)
+
+print("\nMODEL SIZE")
+
+print("Unigram:", sys.getsizeof(unigram), "bytes")
+print("Bigram:", sys.getsizeof(bigram), "bytes")
+print("Trigram:", sys.getsizeof(trigram), "bytes")
+
+# Test cases
+
+assert unigram["hello"] > 0
+assert bigram[("<s>", "hello")] > 0
+assert trigram[("<s>", "hello", "i")] > 0
+
+print("\nAll test cases passed successfully!")
