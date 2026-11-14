@@ -1,0 +1,80 @@
+from collections import Counter
+import random
+
+corpus = [
+    "hello i need appointment",
+    "i want doctor availability",
+    "where is hospital",
+    "i need doctor",
+    "please tell consultation fee"
+]
+
+sentences = [["<s>"] + s.split() + ["</s>"] for s in corpus]
+
+unigram = Counter()
+bigram = Counter()
+trigram = Counter()
+
+for s in sentences:
+    unigram.update(s)
+
+    bigram.update(zip(s[:-1], s[1:]))
+
+    trigram.update(zip(s[:-2], s[1:-1], s[2:]))
+
+print("Unigram:", unigram)
+print("Bigram:", bigram)
+print("Trigram:", trigram)
+
+def unigram_probability(w):
+    return unigram[w] / sum(unigram.values())
+
+def bigram_probability(w1, w2):
+    return bigram[(w1, w2)] / unigram[w1] if unigram[w1] else 0
+
+def trigram_probability(w1, w2, w3):
+    context = sum(v for (a,b,c),v in trigram.items()
+                  if a == w1 and b == w2)
+
+    return trigram[(w1,w2,w3)] / context if context else 0
+
+print("\nBigram Probability:")
+print(bigram_probability("<s>", "hello"))
+
+print("\nTrigram Probability:")
+print(trigram_probability("<s>", "hello", "i"))
+
+print("\nSentence Probability:")
+sentence = ["<s>", "hello", "i", "need", "appointment", "</s>"]
+
+prob = 1
+
+for i in range(len(sentence)-1):
+    prob *= bigram_probability(sentence[i], sentence[i+1])
+
+print(prob)
+
+def generate_bigram():
+    current = "<s>"
+    result = []
+
+    for _ in range(10):
+        choices = [(b, c) for (a,b), c in bigram.items()
+                   if a == current]
+
+        if not choices:
+            break
+
+        words, counts = zip(*choices)
+        current = random.choices(words, weights=counts)[0]
+
+        if current == "</s>":
+            break
+
+        result.append(current)
+
+    return " ".join(result)
+
+print("\nGenerated Sentences:")
+for i in range(10):
+    print(generate_bigram())
