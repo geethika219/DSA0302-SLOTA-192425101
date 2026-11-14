@@ -1,0 +1,27 @@
+levels = {
+    "Phonology": "Sound patterns",
+    "Morphology": "Word formation and inflections",
+    "Syntax": "Sentence structure",
+    "Semantics": "Meaning of words",
+    "Pragmatics": "Meaning based on context",
+    "Discourse": "Meaning across sentences"
+}
+
+for level, meaning in levels.items():
+    print(level, ":", meaning)
+
+print("\nModel families:")
+
+print("1. State machine - validates dates and medical IDs")
+print("2. Rule system - expands medical abbreviations")
+print("3. Probabilistic model - handles ambiguous medical terms")
+
+print("\nAmbiguities:")
+print("Lexical: cold")
+print("Morphological: fracture/fractures")
+print("Segmentation: kidney stone/kidneystone")
+print("Abbreviation: BP = Blood Pressure")
+
+print("\nHospital NLP Pipeline:")
+print("Input -> Tokenization -> Normalization -> Entity Recognition")
+print("-> Morphological Analysis -> Search -> Output")
