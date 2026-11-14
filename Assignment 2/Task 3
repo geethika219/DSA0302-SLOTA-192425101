@@ -1,0 +1,60 @@
+from collections import Counter
+
+sentences = [
+    "<s> hello i need appointment </s>",
+    "<s> i need doctor </s>",
+    "<s> where is hospital </s>",
+    "<s> hello doctor </s>"
+]
+
+sentences = [s.split() for s in sentences]
+
+bigram = Counter()
+unigram = Counter()
+
+for s in sentences:
+    unigram.update(s)
+    bigram.update(zip(s[:-1], s[1:]))
+
+vocab = set(unigram)
+V = len(vocab)
+
+def laplace(w1, w2):
+    return (bigram[(w1,w2)] + 1) / (unigram[w1] + V)
+
+def add_k(w1, w2, k=0.1):
+    return (bigram[(w1,w2)] + k) / (unigram[w1] + k*V)
+
+print("Laplace Probability:",
+      laplace("<s>", "hello"))
+
+print("Add-k Probability:",
+      add_k("<s>", "hello"))
+
+print("\nSmoothed Probabilities:")
+
+for word in vocab:
+    print(word, add_k("<s>", word))
+
+# Good Turing Discounting
+
+Nr = Counter(bigram.values())
+
+print("\nFrequency of Frequencies:")
+
+for r, count in sorted(Nr.items()):
+    print("N", r, "=", count)
+
+def good_turing(r):
+    if r == 0:
+        return Nr.get(1, 0) / max(1, sum(bigram.values()))
+
+    if Nr.get(r, 0) and Nr.get(r+1, 0):
+        return (r+1) * Nr[r+1] / Nr[r]
+
+    return r
+
+print("\nGood Turing Adjusted Counts:")
+
+for r in sorted(Nr):
+    print(r, good_turing(r))
