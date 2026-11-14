@@ -1,0 +1,60 @@
+abbreviations = {
+    "BP": "Blood Pressure",
+    "HR": "Heart Rate",
+    "HTN": "Hypertension",
+    "DM": "Diabetes Mellitus",
+    "CKD": "Chronic Kidney Disease",
+    "MRI": "Magnetic Resonance Imaging",
+    "CT": "Computed Tomography",
+    "CBC": "Complete Blood Count",
+    "WBC": "White Blood Cell",
+    "RBC": "Red Blood Cell",
+    "UTI": "Urinary Tract Infection",
+    "COPD": "Chronic Obstructive Pulmonary Disease",
+    "CAD": "Coronary Artery Disease",
+    "MI": "Myocardial Infarction",
+    "IV": "Intravenous",
+    "IM": "Intramuscular",
+    "PO": "Oral",
+    "OD": "Once Daily",
+    "BD": "Twice Daily",
+    "BID": "Twice Daily",
+    "TID": "Three Times Daily",
+    "QID": "Four Times Daily",
+    "PRN": "As Needed",
+    "SOS": "If Necessary",
+    "GCS": "Glasgow Coma Scale",
+    "SPO2": "Oxygen Saturation",
+    "RR": "Respiratory Rate",
+    "TEMP": "Temperature",
+    "DX": "Diagnosis",
+    "TX": "Treatment",
+    "RX": "Prescription"
+}
+
+def normalize(text):
+    text = text.lower()
+
+    for short, full in abbreviations.items():
+        text = re.sub(
+            r"\b" + re.escape(short.lower()) + r"\b",
+            full.lower(),
+            text
+        )
+
+    text = re.sub(
+        r"(\d+)\s*(mg|ml|kg)",
+        r"\1 \2",
+        text
+    )
+
+    return text
+
+def tokenize(text):
+    pattern = r"\d+(?:\.\d+)?\s?(?:mg|ml|kg|mmHg)\b|[A-Za-z]+(?:[-'][A-Za-z]+)*\.?|\d+|[^\w\s]"
+    return re.findall(pattern, text, re.I)
+
+for record in records:
+    print("\nOriginal:", record)
+    print("Tokens:", tokenize(record))
+    print("Normalized:", normalize(record))
