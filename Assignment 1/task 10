@@ -1,0 +1,43 @@
+def complete_pipeline(text):
+
+    start = time.time()
+
+    # Tokenization
+    tokens = tokenize(text)
+
+    # Normalization
+    normalized = normalize(text)
+
+    # Entity recognition
+    entities = {}
+
+    for name, pattern in patterns.items():
+        entities[name] = re.findall(pattern, text, re.I)
+
+    # Stemming
+    stems = [
+        stemmer.stem(word.lower())
+        for word in re.findall(r"[A-Za-z]+", text)
+    ]
+
+    end = time.time()
+
+    return {
+        "Tokens": tokens,
+        "Normalized": normalized,
+        "Entities": entities,
+        "Stems": stems,
+        "Runtime": round(end-start, 6)
+    }
+
+for i, record in enumerate(records):
+
+    print("\nRECORD", i+1)
+
+    result = complete_pipeline(record)
+
+    print("Tokens:", result["Tokens"])
+    print("Normalized:", result["Normalized"])
+    print("Entities:", result["Entities"])
+    print("Stems:", result["Stems"])
+    print("Runtime:", result["Runtime"])
