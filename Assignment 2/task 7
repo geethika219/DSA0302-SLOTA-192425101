@@ -1,0 +1,62 @@
+import nltk
+
+nltk.download('averaged_perceptron_tagger_eng')
+
+sentences = [
+    "hello i need an appointment",
+    "doctor is available today",
+    "where is the hospital",
+    "please tell consultation fee"
+]
+
+training = {}
+
+for sentence in sentences:
+    words = nltk.word_tokenize(sentence)
+    tagged = nltk.pos_tag(words)
+
+    for word, tag in tagged:
+        training.setdefault(word.lower(), []).append(tag)
+
+def rule_tagger(sentence):
+    words = nltk.word_tokenize(sentence)
+    result = []
+
+    for i, word in enumerate(words):
+        w = word.lower()
+
+        if w in ["i","you","he","she","we","they"]:
+            tag = "PRP"
+
+        elif w in ["a","an","the"]:
+            tag = "DT"
+
+        elif w in ["is","am","are","was","were"]:
+            tag = "VB"
+
+        elif w.endswith("ing"):
+            tag = "VBG"
+
+        elif w.endswith("ed"):
+            tag = "VBD"
+
+        elif w.endswith("ly"):
+            tag = "RB"
+
+        elif w in training:
+            tag = max(set(training[w]), key=training[w].count)
+
+        elif word.istitle():
+            tag = "NNP"
+
+        else:
+            tag = "NN"
+
+        result.append((word,tag))
+
+    return result
+
+test = "i need doctor appointment today"
+
+print("Rule-Based POS Tagging:")
+print(rule_tagger(test))
