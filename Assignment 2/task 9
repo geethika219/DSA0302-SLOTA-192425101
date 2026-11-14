@@ -1,0 +1,65 @@
+import nltk
+
+nltk.download('averaged_perceptron_tagger_eng')
+nltk.download('punkt_tab')
+
+from nltk.tag import UnigramTagger
+from nltk.tag.brill import BrillTaggerTrainer
+from nltk.tag.brill import Pos, Word
+
+corpus = [
+    "hello i need appointment",
+    "i need doctor",
+    "where is hospital",
+    "doctor is available today",
+    "please tell consultation fee",
+    "i want to book appointment"
+]
+
+tagged_data = []
+
+for sentence in corpus:
+    words = nltk.word_tokenize(sentence)
+    tagged_data.append(nltk.pos_tag(words))
+
+split = max(1, int(len(tagged_data) * 0.8))
+
+train_data = tagged_data[:split]
+test_data = tagged_data[split:]
+
+initial_tagger = UnigramTagger(train_data)
+
+templates = [
+    nltk.tag.brill.Template(Pos([-1])),
+    nltk.tag.brill.Template(Pos([1])),
+    nltk.tag.brill.Template(Word([-1])),
+    nltk.tag.brill.Template(Word([1])),
+    nltk.tag.brill.Template(Word([0])),
+    nltk.tag.brill.Template(Pos([-2])),
+    nltk.tag.brill.Template(Pos([2]))
+]
+
+trainer = BrillTaggerTrainer(
+    initial_tagger,
+    templates,
+    trace=0
+)
+
+brill_tagger = trainer.train(
+    train_data,
+    max_rules=20,
+    min_score=1
+)
+
+print("Learned Brill Rules:")
+
+for rule in brill_tagger.rules():
+    print(rule)
+
+sentence = ["doctor", "is", "available", "today"]
+
+print("\nInput:", sentence)
+print("Brill Tagging:", brill_tagger.tag(sentence))
+
+if test_data:
+    print("\nAccuracy:", brill_tagger.accuracy(test_data))
