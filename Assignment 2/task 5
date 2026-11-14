@@ -1,0 +1,57 @@
+import math
+from collections import Counter
+
+def entropy(probabilities):
+    return -sum(p * math.log2(p)
+                for p in probabilities if p > 0)
+
+print("Uniform Entropy:",
+      entropy([0.25,0.25,0.25,0.25]))
+
+print("Peaked Entropy:",
+      entropy([0.97,0.01,0.01,0.01]))
+
+corpus = [
+    "hello i need appointment",
+    "i need doctor",
+    "where is hospital",
+    "please tell fee"
+]
+
+sentences = [s.split() for s in corpus]
+
+unigram = Counter()
+bigram = Counter()
+
+for s in sentences:
+    s = ["<s>"] + s + ["</s>"]
+    unigram.update(s)
+    bigram.update(zip(s[:-1],s[1:]))
+
+def calculate_perplexity(test_sentences):
+    log_probability = 0
+    total_words = 0
+    V = len(unigram)
+
+    for sentence in test_sentences:
+        s = ["<s>"] + sentence.split() + ["</s>"]
+
+        for a,b in zip(s[:-1],s[1:]):
+            probability = (
+                bigram[(a,b)] + 1
+            ) / (unigram[a] + V)
+
+            log_probability += math.log(probability)
+            total_words += 1
+
+    cross_entropy = -log_probability / total_words
+    perplexity = math.exp(cross_entropy)
+
+    return cross_entropy, perplexity
+
+test = ["hello i need doctor", "where is hospital"]
+
+ce, pp = calculate_perplexity(test)
+
+print("Cross Entropy:", ce)
+print("Perplexity:", pp)
