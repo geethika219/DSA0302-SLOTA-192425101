@@ -1,0 +1,57 @@
+import re
+import collections
+import matplotlib.pyplot as plt
+
+corpus = """
+hello i need an appointment
+i want to know doctor availability
+what is the timing of hospital
+i need appointment at 6:30
+where is cardiology department
+i have fever and headache
+please tell consultation fee
+"""
+
+words = re.findall(r"\b[\w:]+\b", corpus.lower())
+
+tokens = len(words)
+types = len(set(words))
+lemmas = len(set(words))
+word_forms = len(set(words))
+
+print("Token Count:", tokens)
+print("Type Count:", types)
+print("Lemma Count:", lemmas)
+print("Word Forms:", word_forms)
+
+freq = collections.Counter(words)
+
+print("\nWord Frequencies:")
+for word, count in freq.items():
+    print(word, count)
+
+ranked = sorted(freq.values(), reverse=True)
+
+plt.plot(range(1, len(ranked)+1), ranked, marker='o')
+plt.xlabel("Word Rank")
+plt.ylabel("Frequency")
+plt.title("Zipf's Law")
+plt.show()
+
+for threshold in [1, 2, 3, 5]:
+    vocab = {w for w, c in freq.items() if c >= threshold}
+    rare = sum(c for w, c in freq.items() if c < threshold)
+
+    print("\nThreshold:", threshold)
+    print("Vocabulary Size:", len(vocab))
+    print("UNK Tokens:", rare)
+    print("UNK Proportion:", rare / tokens)
+
+train_vocab = set(words)
+
+dev = "hello i need doctor appointment tomorrow"
+dev_words = dev.split()
+
+oov = sum(w not in train_vocab for w in dev_words)
+
+print("OOV Rate:", oov / len(dev_words))
