@@ -1,0 +1,97 @@
+# Hospital Helpline with Railway and Metro Enquiries
+
+train_vocab = {
+    "hello", "i", "need", "doctor", "appointment",
+    "hospital", "where", "is", "the", "bus",
+    "train", "timing", "fee", "please", "tell"
+}
+
+# Station name gazetteer
+
+gazetteer = {
+    "chennai", "madurai", "vellore",
+    "katpadi", "tambaram", "arakkonam"
+}
+
+# Code-mixed words
+
+code_mixed = {
+    "enna", "evlo", "venum", "irukku"
+}
+
+new_calls = [
+    "chennai to madurai train timing",
+    "chennai to madurai bus timing enna",
+    "vellore station train fare",
+    "train fare evlo from chennai"
+]
+
+print("ORIGINAL MODEL EVALUATION")
+
+for sentence in new_calls:
+
+    words = sentence.split()
+
+    unknown = [
+        word for word in words
+        if word not in train_vocab
+    ]
+
+    print("\nSentence:", sentence)
+    print("Unknown Words:", unknown)
+
+    print("OOV Rate:", len(unknown) / len(words))
+
+# Modified vocabulary
+
+new_vocab = train_vocab.union(gazetteer)
+
+print("\nMODIFIED MODEL EVALUATION")
+
+for sentence in new_calls:
+
+    words = sentence.split()
+
+    unknown = [
+        word for word in words
+        if word not in new_vocab
+    ]
+
+    print("\nSentence:", sentence)
+    print("Unknown Words:", unknown)
+
+    print("OOV Rate:", len(unknown) / len(words))
+
+# Classify words
+
+print("\nWORD CLASSIFICATION")
+
+for sentence in new_calls:
+
+    for word in sentence.split():
+
+        if word in gazetteer:
+            category = "STATION_NAME"
+
+        elif word in code_mixed:
+            category = "CODE_MIXED"
+
+        elif word in train_vocab:
+            category = "KNOWN_WORD"
+
+        else:
+            category = "UNKNOWN_WORD"
+
+        print(word, ":", category)
+
+# Final adapted design
+
+print("\nFINAL ADAPTED DESIGN")
+
+print("1. Add station name gazetteer.")
+print("2. Add character-level language model.")
+print("3. Support code-mixed words.")
+print("4. Extend the POS tagset.")
+print("5. Update vocabulary regularly.")
+print("6. Retrain language models with railway data.")
+print("7. Evaluate using new railway enquiry dataset.")
