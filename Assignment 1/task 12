@@ -1,0 +1,119 @@
+import re
+import pandas as pd
+
+# Sample OCR and code-mixed hospital records
+records = [
+    "PATIENT HAS FEVER 101 F",
+    "paracetamol 500mg given",
+    "patient ku fever irundhuchu",
+    "BP 120/80 mmHg",
+    "patient ku cough irukku",
+    "diabetes patient taking medicine",
+    "paracetamol 500mg kuduthen",
+    "Temp: 38.5 C",
+    "patient admitted for 3 days",
+    "fracture detected in right leg"
+]
+
+# 1. OCR text correction
+ocr_corrections = {
+    "l0l": "101",
+    "5O0": "500",
+    "l20": "120",
+    "8O": "80"
+}
+
+def correct_ocr(text):
+    for wrong, correct in ocr_corrections.items():
+        text = text.replace(wrong, correct)
+    return text
+
+
+# 2. Code-mixed language dictionary
+code_mixed_dictionary = {
+    "ku": "",
+    "irundhuchu": "had",
+    "irukku": "has",
+    "kuduthen": "given",
+    "fever": "fever",
+    "cough": "cough"
+}
+
+def normalize_code_mixed(text):
+    words = text.lower().split()
+
+    normalized_words = []
+
+    for word in words:
+        normalized_words.append(
+            code_mixed_dictionary.get(word, word)
+        )
+
+    return " ".join(normalized_words)
+
+
+# 3. Clinical entity extraction
+patterns = {
+    "Dosage": r"\b\d+(?:\.\d+)?\s?(?:mg|mcg|g|ml)\b",
+    "Blood Pressure": r"\b\d{2,3}/\d{2,3}\s?mmHg\b",
+    "Temperature": r"\b\d{2,3}(?:\.\d+)?\s?°?\s?(?:C|F)\b",
+    "Duration": r"\b\d+\s?(?:days?|weeks?|months?)\b"
+}
+
+
+# 4. Process records
+results = []
+
+for record in records:
+
+    corrected = correct_ocr(record)
+
+    normalized = normalize_code_mixed(corrected)
+
+    extracted_entities = {}
+
+    for entity, pattern in patterns.items():
+        matches = re.findall(
+            pattern,
+            corrected,
+            re.IGNORECASE
+        )
+
+        extracted_entities[entity] = matches
+
+    results.append({
+        "Original Record": record,
+        "OCR Corrected": corrected,
+        "Normalized Text": normalized,
+        "Dosage": extracted_entities["Dosage"],
+        "Blood Pressure": extracted_entities["Blood Pressure"],
+        "Temperature": extracted_entities["Temperature"],
+        "Duration": extracted_entities["Duration"]
+    })
+
+
+# 5. Display results
+df = pd.DataFrame(results)
+
+print("OCR AND CODE-MIXED LANGUAGE NORMALISATION")
+print(df.to_string(index=False))
+
+
+# 6. Evaluation
+print("\nEVALUATION")
+print("Total records:", len(records))
+print("Processed records:", len(results))
+
+print("\nCHALLENGES")
+print("1. OCR spelling errors")
+print("2. Tamil-English code-mixed sentences")
+print("3. Medical abbreviation variations")
+print("4. Incorrect dosage recognition")
+
+print("\nRECOMMENDATION")
+print("Use OCR correction, language detection,")
+print("code-mixed dictionaries and medical NLP models.")
+
+print("\nConclusion:")
+print("Combining OCR correction and code-mixed language")
+print("normalisation improves hospital record searching.")
