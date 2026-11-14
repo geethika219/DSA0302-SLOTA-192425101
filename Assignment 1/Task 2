@@ -1,0 +1,32 @@
+patterns = {
+    "Date": r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b",
+    "Dosage": r"\b\d+\s?(mg|ml|mcg|g)\b",
+    "Blood Pressure": r"\b\d{2,3}/\d{2,3}\s?mmHg\b",
+    "Email": r"\b[\w.-]+@[\w.-]+\.\w+\b",
+    "Phone": r"\b\d{10}\b",
+    "Percentage": r"\b\d+%",
+    "Temperature": r"\b\d+\.?\d*\s?°?[CF]\b",
+    "Duration": r"\b\d+\s?(days|weeks|months|years)\b",
+    "Patient ID": r"\bPAT\d{3,8}\b",
+    "Time": r"\b\d{1,2}:\d{2}\b",
+    "Weight": r"\b\d+\.?\d*\s?kg\b",
+    "Procedure": r"\b\w+(ectomy|otomy|oscopy|plasty)\b"
+}
+
+for name, pattern in patterns.items():
+    print("\n", name)
+
+    for record in records:
+        matches = re.findall(pattern, record, re.I)
+
+        if matches:
+            print(matches)
+
+# Greedy and non-greedy
+text = "Give 500 mg paracetamol and 250 mg medicine"
+
+print("\nGreedy:")
+print(re.findall(r".*(\d+\s?mg)", text))
+
+print("\nNon-greedy:")
+print(re.findall(r".*?(\d+\s?mg)", text))
