@@ -1,0 +1,44 @@
+def plural(word):
+
+    if word.endswith("y"):
+        return word[:-1] + "ies"
+
+    elif word.endswith(("s", "x", "ch", "sh")):
+        return word + "es"
+
+    else:
+        return word + "s"
+
+
+words = [
+    "fracture",
+    "patient",
+    "diagnosis",
+    "injury",
+    "treatment"
+]
+
+print("Inflectional Forms")
+
+for word in words:
+
+    print("\nBase:", word)
+    print("Plural:", plural(word))
+    print("Past:", word + "ed")
+    print("Continuous:", word + "ing")
+
+
+# Irregular forms
+
+irregular = {
+    "children": "child",
+    "men": "man",
+    "women": "woman",
+    "teeth": "tooth",
+    "feet": "foot"
+}
+
+print("\nIrregular words:")
+
+for word, lemma in irregular.items():
+    print(word, "->", lemma)
