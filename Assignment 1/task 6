@@ -1,0 +1,43 @@
+affixes = [
+    "itis",
+    "ectomy",
+    "ology",
+    "osis",
+    "aemia",
+    "ation",
+    "able",
+    "ive",
+    "al",
+    "ic",
+    "y",
+    "nephro",
+    "cardio",
+    "hyper",
+    "hypo",
+    "re",
+    "un"
+]
+
+print("Clinical Derivational Affixes")
+
+for affix in affixes:
+    print(affix)
+
+
+# Derivational families
+
+families = {
+    "Kidney": ["nephro", "nephritis", "nephrectomy", "nephrology"],
+    "Heart": ["cardio", "carditis", "cardiology"],
+    "Infection": ["infect", "infection", "infectious"],
+    "Diagnosis": ["diagnose", "diagnosis", "diagnostic"],
+    "Treatment": ["treat", "treatment", "treatable"],
+    "Operation": ["operate", "operation", "operative"]
+}
+
+for root, forms in families.items():
+
+    print("\n", root)
+
+    for form in forms:
+        print(form)
