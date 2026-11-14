@@ -1,0 +1,34 @@
+words = [
+    "fracture",
+    "fractures",
+    "fractured",
+    "fracturing",
+    "infection",
+    "infections",
+    "patients",
+    "patient"
+]
+
+results = []
+
+for word in words:
+
+    results.append({
+        "Original": word,
+        "No Normalization": word,
+        "Porter Stemmer": stemmer.stem(word),
+        "Morphological Analysis": plural_lemma(word)
+    })
+
+df = pd.DataFrame(results)
+
+display(df)
+
+print("\nRecommendation:")
+
+print("Use a hybrid normalization system.")
+
+print("1. Regular expressions for entity recognition.")
+print("2. Finite-state morphology for known clinical words.")
+print("3. Porter Stemmer as a fallback.")
+print("4. Preserve original clinical text.")
