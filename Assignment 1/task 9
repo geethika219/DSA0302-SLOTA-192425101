@@ -1,0 +1,37 @@
+from nltk.stem import PorterStemmer
+
+stemmer = PorterStemmer()
+
+words = [
+    "fractures",
+    "fractured",
+    "fracturing",
+    "diagnoses",
+    "infections",
+    "treatments",
+    "patients",
+    "operations",
+    "medical",
+    "studies"
+]
+
+print("Porter Stemming Results")
+
+for word in words:
+
+    print(word, "->", stemmer.stem(word))
+
+# Compare original and stemmed words
+
+data = []
+
+for word in words:
+
+    data.append({
+        "Original": word,
+        "Stem": stemmer.stem(word)
+    })
+
+df = pd.DataFrame(data)
+
+display(df)
