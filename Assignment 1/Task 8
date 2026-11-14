@@ -1,0 +1,45 @@
+def orthographic_rule(word, suffix):
+
+    if suffix == "ing" and word.endswith("e"):
+        return word[:-1] + suffix
+
+    if suffix == "ed" and word.endswith("e"):
+        return word + "d"
+
+    if suffix == "ies" and word.endswith("y"):
+        return word[:-1] + suffix
+
+    if suffix == "s" and word.endswith(("s", "x", "ch", "sh")):
+        return word + "es"
+
+    if suffix == "ing" and len(word) > 2:
+        if word[-1] not in "aeiou" and word[-2] in "aeiou":
+            return word + word[-1] + suffix
+
+    return word + suffix
+
+
+tests = [
+    ("treat", "ed"),
+    ("use", "ing"),
+    ("study", "ies"),
+    ("match", "s"),
+    ("stop", "ing"),
+    ("care", "ed"),
+    ("play", "s"),
+    ("fix", "s"),
+    ("hope", "ing"),
+    ("walk", "ed")
+]
+
+for word, suffix in tests:
+
+    print(word, "+", suffix, "=", orthographic_rule(word, suffix))
+
+
+print("\nOrthographic rules implemented:")
+print("1. Remove final e before ing")
+print("2. Add d after final e")
+print("3. Change consonant + y into ies")
+print("4. Add es after sibilant sounds")
+print("5. Double final consonant in selected short-vowel forms")
