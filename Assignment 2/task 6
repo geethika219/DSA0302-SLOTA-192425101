@@ -1,0 +1,48 @@
+import nltk
+
+nltk.download('averaged_perceptron_tagger_eng')
+nltk.download('punkt')
+
+sentences = [
+    "hello i need an appointment",
+    "where is the hospital",
+    "doctor is available today",
+    "please tell consultation fee"
+]
+
+for sentence in sentences:
+    words = nltk.word_tokenize(sentence)
+    tags = nltk.pos_tag(words)
+
+    print("\nSentence:", sentence)
+    print("POS Tags:", tags)
+
+# Tag frequency
+
+from collections import Counter
+
+all_tags = []
+
+for sentence in sentences:
+    words = nltk.word_tokenize(sentence)
+    tags = nltk.pos_tag(words)
+
+    for word, tag in tags:
+        all_tags.append(tag)
+
+print("\nTag Frequency:")
+print(Counter(all_tags))
+
+# Ambiguity
+
+word_tags = {}
+
+for sentence in sentences:
+    for word, tag in nltk.pos_tag(nltk.word_tokenize(sentence)):
+        word_tags.setdefault(word.lower(), set()).add(tag)
+
+ambiguous = {w:t for w,t in word_tags.items() if len(t)>1}
+
+print("\nAmbiguous Words:")
+print(ambiguous)
+print("Ambiguous Word Count:", len(ambiguous))
