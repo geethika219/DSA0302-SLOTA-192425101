@@ -1,0 +1,61 @@
+# DFA for validating a 10-digit phone number
+
+def phone_dfa(number):
+
+    state = 0
+
+    for char in number:
+
+        if char.isdigit():
+            state += 1
+        else:
+            return False
+
+    return state == 10
+
+
+numbers = [
+    "9876543210",
+    "1234567890",
+    "12345",
+    "98765abc10"
+]
+
+for number in numbers:
+    print(number, "Accepted:", phone_dfa(number))
+
+
+# DFA for dosage
+
+def dosage_dfa(text):
+
+    pattern = r"^\d+(\.\d+)?\s?(mg|ml|mcg|g)$"
+
+    return bool(re.fullmatch(pattern, text, re.I))
+
+
+dosages = ["500 mg", "250ml", "5 mcg", "five mg"]
+
+for dosage in dosages:
+    print(dosage, dosage_dfa(dosage))
+
+
+# NFA example with optional hyphen
+
+nfa = {
+    0: {"P": {1}},
+    1: {"A": {2}},
+    2: {"T": {3}},
+    3: {"-": {4}, "epsilon": {4}},
+    4: {"1": {5}},
+    5: {"2": {6}},
+    6: {"3": {7}}
+}
+
+print("\nNFA Transition Table")
+
+for state, transitions in nfa.items():
+    print(state, transitions)
+
+print("\nAccepted examples: PAT-123 and PAT123")
+print("Rejected example: PAT12")
