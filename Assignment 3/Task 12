@@ -1,0 +1,93 @@
+import re
+import pandas as pd
+
+# New conversational messages
+
+messages = [
+    "Hi",
+    "Hello, can you help me",
+    "Can you tell me when the exams will be held",
+    "The exams that were postponed will be held tomorrow",
+    "The hostel fee is due and the student needs the receipt",
+    "Where can I submit my application",
+    "The portal crashed and I cannot download the form",
+    "I need help with my fee payment",
+    "Can you tell me whether the hostel fee is paid",
+    "The student who submitted the form needs help"
+]
+
+
+# Message normalization
+
+def normalize_message(message):
+    message = message.lower()
+    message = re.sub(r"[^\w\s]", "", message)
+    message = re.sub(r"\s+", " ", message)
+    return message.strip()
+
+
+# Check original grammar coverage
+
+def check_original(message):
+    words = normalize_message(message).split()
+
+    try:
+        trees = list(earley_parser.parse(words))
+        return len(trees) > 0
+
+    except Exception:
+        return False
+
+
+# Check agreement separately
+
+def check_features(message):
+    return agreement_check(normalize_message(message))
+
+
+results = []
+
+for message in messages:
+
+    normalized = normalize_message(message)
+
+    accepted = check_original(message)
+
+    results.append({
+        "Original Message": message,
+        "Normalized": normalized,
+        "Original Grammar": (
+            "Accepted" if accepted else "Not Covered"
+        ),
+        "Feature Check": check_features(message)
+    })
+
+
+df = pd.DataFrame(results)
+
+print("TASK 12: CONVERSATIONAL MESSAGE ANALYSIS")
+
+display(df)
+
+
+# Proposed revised design
+
+print("""
+REVISED HELPDESK DESIGN
+
+1. Add greeting and conversational rules.
+2. Add embedded question rules.
+3. Add relative clause rules.
+4. Add multi-clause coordination.
+5. Add feature-based agreement.
+6. Add partial parsing for incomplete messages.
+7. Use Earley parsing for complex structures.
+8. Use PCFG for selecting the best parse.
+9. Use a fallback mechanism for unknown constructions.
+
+FINAL DECISION: MODIFY THE ORIGINAL DESIGN.
+
+The modified design improves coverage of conversational
+student messages while maintaining grammatical checking
+and probabilistic ranking.
+""")
