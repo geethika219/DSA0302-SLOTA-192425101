@@ -1,0 +1,32 @@
+from nltk.parse import EarleyChartParser
+from nltk.tree import Tree
+
+parser = EarleyChartParser(grammar)
+
+sentences = [
+    "the student submits the form",
+    "the portal crashed",
+    "the students check the form",
+    "send me the receipt",
+    "apply for a room"
+]
+
+for sentence in sentences:
+    words = sentence.split()
+
+    print("\nSentence:", sentence)
+
+    trees = list(parser.parse(words))
+
+    print("Number of Parses:", len(trees))
+
+    for tree in trees:
+        print("\nBracketed Tree:")
+        print(tree)
+
+        print("\nTree Diagram:")
+        tree.pretty_print()
+
+        print("Tree Height:", tree.height())
+        print("Number of Nodes:", len(list(tree.subtrees())))
+        print("Rule Applications:", len(tree.productions()))
