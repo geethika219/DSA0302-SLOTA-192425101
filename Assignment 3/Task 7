@@ -1,0 +1,30 @@
+from nltk.parse import EarleyChartParser
+
+earley_parser = EarleyChartParser(grammar)
+
+sentence = "the student submits the form"
+
+words = sentence.split()
+
+chart = earley_parser.chart_parse(words)
+
+print("Sentence:", sentence)
+
+print("\nEARLEY CHART")
+
+for i in range(len(words) + 1):
+
+    print("\nChart S[", i, "]")
+
+    for edge in chart.select(end=i):
+        print(edge)
+
+trees = list(chart.parses(grammar.start()))
+
+print("\nNumber of Parses:", len(trees))
+
+for tree in trees:
+    print(tree)
+    tree.pretty_print()
+
+print("Total Chart States:", chart.num_edges())
