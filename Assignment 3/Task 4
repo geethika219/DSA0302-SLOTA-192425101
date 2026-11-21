@@ -1,0 +1,54 @@
+import pandas as pd
+
+singular = ["student", "portal", "fee", "form"]
+plural = ["students", "portals", "fees", "forms"]
+
+singular_verbs = ["submits", "is", "was", "needs"]
+plural_verbs = ["submit", "are", "were", "need"]
+
+tests = [
+    ("the student submits the form", True),
+    ("the students submit the forms", True),
+    ("the portal is pending", True),
+    ("the fees are pending", True),
+    ("the students submits the form", False),
+    ("the student submit the form", False),
+    ("the portal are pending", False),
+    ("the fees is pending", False),
+    ("the form was submitted", True),
+    ("the forms were submitted", True),
+    ("the form were submitted", False),
+    ("the students is pending", False)
+]
+
+def agreement_check(sentence):
+    words = sentence.split()
+
+    for i, word in enumerate(words):
+        if word in singular:
+            if any(v in words[i+1:] for v in plural_verbs):
+                return False
+
+        if word in plural:
+            if any(v in words[i+1:] for v in singular_verbs):
+                return False
+
+    return True
+
+results = []
+
+for sentence, expected in tests:
+    actual = agreement_check(sentence)
+
+    results.append({
+        "Sentence": sentence,
+        "Expected": expected,
+        "Actual": actual,
+        "Correct": expected == actual
+    })
+
+df = pd.DataFrame(results)
+
+display(df)
+print("Correct Predictions:", df["Correct"].sum())
+print("Total Sentences:", len(df))
