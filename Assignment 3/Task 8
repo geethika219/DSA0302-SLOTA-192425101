@@ -1,0 +1,67 @@
+# Feature structures
+
+student = {
+    "NUM": "SG",
+    "PER": 3,
+    "CASE": "NOM"
+}
+
+students = {
+    "NUM": "PL",
+    "PER": 3,
+    "CASE": "NOM"
+}
+
+submits = {
+    "NUM": "SG",
+    "PER": 3,
+    "SUBCAT": "NP"
+}
+
+submit = {
+    "NUM": "PL",
+    "PER": 3,
+    "SUBCAT": "NP"
+}
+
+me = {
+    "NUM": "SG",
+    "CASE": "ACC",
+    "PER": 1
+}
+
+
+def unify(f1, f2):
+
+    result = f1.copy()
+
+    for key, value in f2.items():
+
+        if key in result and result[key] != value:
+            return "Unification Failed"
+
+        result[key] = value
+
+    return result
+
+
+print("Student Features:", student)
+print("Students Features:", students)
+
+print("\nSuccessful Unification:")
+print(unify(
+    {"NUM": "SG"},
+    {"NUM": "SG"}
+))
+
+print("\nFailed Unification:")
+print(unify(
+    {"NUM": "SG"},
+    {"NUM": "PL"}
+))
+
+print("\nSubcategorization Unification:")
+print(unify(
+    {"SUBCAT": "NP"},
+    {"SUBCAT": "NP"}
+))
