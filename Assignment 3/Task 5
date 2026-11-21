@@ -1,0 +1,43 @@
+verb_frames = {
+    "crashed": "Intransitive - Verb",
+    "submit": "Transitive - Verb + Noun Phrase",
+    "send": "Ditransitive - Verb + NP + NP",
+    "tell": "Sentential - Verb + Clause",
+    "apply": "Prepositional - Verb + PP"
+}
+
+print("VERB SUBCATEGORIZATION")
+
+for verb, frame in verb_frames.items():
+    print(verb, ":", frame)
+
+
+def check_subcategorization(sentence):
+    words = sentence.lower().split()
+
+    if "crashed" in words:
+        return words[-1] == "crashed"
+
+    if "submit" in words:
+        return "form" in words or "forms" in words
+
+    if "send" in words:
+        return "me" in words and "receipt" in words
+
+    if "apply" in words:
+        return "for" in words
+
+    return False
+
+
+test_sentences = [
+    "the portal crashed",
+    "the student submit the form",
+    "send me the receipt",
+    "apply for a hostel room",
+    "the portal crashed the form",
+    "submit"
+]
+
+for sentence in test_sentences:
+    print(sentence, "=>", check_subcategorization(sentence))
