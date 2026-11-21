@@ -1,0 +1,61 @@
+import nltk
+from nltk import CFG
+
+grammar_text = """
+S -> NP VP
+S -> IMP
+S -> YNQ
+S -> WHQ
+
+NP -> DET N
+NP -> DET ADJ N
+NP -> PRON
+NP -> NAME
+NP -> NP PP
+
+VP -> V_INTR
+VP -> V_TRANS NP
+VP -> V_DITRANS PRON NP
+VP -> V_PP PP
+VP -> AUX V_BASE
+
+PP -> PREP NP
+ADJP -> ADJ
+ADJP -> ADV ADJ
+
+IMP -> V_BASE NP
+YNQ -> AUX NP V_BASE NP
+WHQ -> WH AUX NP V_BASE NP
+"""
+
+lexicon = """
+DET -> 'the' | 'a' | 'an' | 'my'
+N -> 'student' | 'students' | 'form' | 'portal' | 'fee' | 'receipt' | 'room'
+ADJ -> 'new' | 'old' | 'pending'
+PRON -> 'i' | 'you' | 'me' | 'they'
+NAME -> 'arun' | 'bala'
+V_INTR -> 'crashed' | 'failed'
+V_TRANS -> 'submit' | 'submits' | 'check'
+V_DITRANS -> 'send'
+V_PP -> 'apply'
+V_BASE -> 'submit' | 'check'
+AUX -> 'can' | 'will'
+PREP -> 'for' | 'to' | 'in'
+WH -> 'when' | 'where' | 'what'
+ADV -> 'very'
+"""
+
+grammar = CFG.fromstring(grammar_text + lexicon)
+
+print("Start Symbol:", grammar.start())
+print("\nNon-terminals:")
+print(grammar.nonterminals())
+
+print("\nTerminals:")
+print(grammar.terminals())
+
+print("\nProduction Rules:")
+for rule in grammar.productions():
+    print(rule)
+
+print("\nTotal Rules:", len(grammar.productions()))
