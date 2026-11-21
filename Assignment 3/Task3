@@ -1,0 +1,45 @@
+from nltk import CFG
+from nltk.parse import EarleyChartParser
+
+sentence_grammar = CFG.fromstring("""
+S -> DECL | IMP | YNQ | WHQ
+
+DECL -> NP VP
+IMP -> V NP
+YNQ -> AUX NP V NP
+WHQ -> WH AUX NP V NP
+
+NP -> DET N
+NP -> PRON
+
+VP -> V
+VP -> V NP
+
+DET -> 'the' | 'a'
+N -> 'student' | 'form' | 'portal'
+PRON -> 'you'
+V -> 'submit' | 'crashed'
+AUX -> 'can' | 'will'
+WH -> 'when' | 'where'
+""")
+
+parser = EarleyChartParser(sentence_grammar)
+
+sentences = [
+    "the student submit",
+    "submit the form",
+    "can you submit the form",
+    "when will you submit the form"
+]
+
+for sentence in sentences:
+    print("\nSentence:", sentence)
+
+    trees = list(parser.parse(sentence.split()))
+
+    if trees:
+        print("Accepted")
+        for tree in trees:
+            tree.pretty_print()
+    else:
+        print("Not Accepted")
