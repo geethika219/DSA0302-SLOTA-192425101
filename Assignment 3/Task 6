@@ -1,0 +1,29 @@
+from nltk.parse import RecursiveDescentParser
+import time
+
+top_parser = RecursiveDescentParser(grammar)
+
+sentences = [
+    "the portal crashed",
+    "the student submits the form"
+]
+
+for sentence in sentences:
+
+    print("\nSentence:", sentence)
+
+    start = time.time()
+
+    try:
+        trees = list(top_parser.parse(sentence.split()))
+
+        end = time.time()
+
+        print("Number of Parses:", len(trees))
+        print("Execution Time:", round(end-start, 6), "seconds")
+
+        for tree in trees:
+            tree.pretty_print()
+
+    except Exception as e:
+        print("Parsing Error:", e)
