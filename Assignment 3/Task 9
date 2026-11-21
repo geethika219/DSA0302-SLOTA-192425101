@@ -1,0 +1,72 @@
+from nltk.grammar import Nonterminal
+from nltk import induce_pcfg
+from nltk.parse import ViterbiParser
+from nltk.parse import EarleyChartParser
+
+training_sentences = [
+    "the student submits the form",
+    "the portal crashed",
+    "the students check the form",
+    "the student checks the form",
+    "the fee is paid",
+    "the exam was postponed",
+    "the students submit the forms",
+    "the portal failed",
+    "the student needs the receipt",
+    "the fee is pending",
+    "the students check the status",
+    "the student submits the receipt",
+    "the portal crashed",
+    "the student checks the status",
+    "the students submit the form",
+    "the portal failed",
+    "the student submits the form",
+    "the fee is paid",
+    "the exam was postponed",
+    "the students check the forms"
+]
+
+training_parser = EarleyChartParser(grammar)
+
+trees = []
+
+for sentence in training_sentences:
+    try:
+        parsed = list(training_parser.parse(sentence.split()))
+
+        if parsed:
+            trees.append(parsed[0])
+
+    except Exception:
+        pass
+
+productions = []
+
+for tree in trees:
+    productions.extend(tree.productions())
+
+pcfg = induce_pcfg(
+    Nonterminal("S"),
+    productions
+)
+
+print("PCFG PRODUCTION RULES")
+
+for rule in pcfg.productions():
+    print(rule)
+
+print("\nVITERBI PARSING")
+
+viterbi = ViterbiParser(pcfg)
+
+test_sentence = "the portal crashed"
+
+try:
+    result = list(viterbi.parse(test_sentence.split()))
+
+    for tree in result:
+        print(tree)
+        print("Probability:", tree.prob())
+
+except Exception as e:
+    print("No valid Viterbi parse:", e)
