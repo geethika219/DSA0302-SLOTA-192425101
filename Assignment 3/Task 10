@@ -1,0 +1,107 @@
+import time
+import pandas as pd
+
+test_sentences = [
+    "the student submits the form",
+    "the portal crashed",
+    "the students check the form",
+    "send me the receipt",
+    "apply for a room",
+    "the student checks the form",
+    "the fee is paid",
+    "the exam was postponed",
+    "the students submit the forms",
+    "the portal failed",
+    "the student needs the receipt",
+    "the fee is pending",
+    "the students check the status",
+    "the student submits the receipt",
+    "the portal crashed",
+    "the exam was postponed",
+    "the students check the forms",
+    "the student submits the form",
+    "the portal failed",
+    "the fee is paid",
+    "the students submits the form",
+    "the student submit the form",
+    "the portal crashed the form",
+    "the fees is pending",
+    "the exam were postponed",
+    "submit the form",
+    "can you submit the form",
+    "when will you submit the form",
+    "the student checks the status",
+    "the portal crashed"
+]
+
+results = []
+
+for sentence in test_sentences:
+
+    words = sentence.split()
+
+    # Earley Parser
+    start = time.time()
+
+    try:
+        chart = earley_parser.chart_parse(words)
+        trees = list(chart.parses(grammar.start()))
+        count = len(trees)
+        states = chart.num_edges()
+
+    except Exception:
+        count = 0
+        states = 0
+
+    earley_time = time.time() - start
+
+    # Top-Down Parser
+    start = time.time()
+
+    try:
+        td_trees = list(top_parser.parse(words))
+        td_count = len(td_trees)
+
+    except Exception:
+        td_count = 0
+
+    td_time = time.time() - start
+
+    results.append({
+        "Sentence": sentence,
+        "Earley Parses": count,
+        "Chart States": states,
+        "Earley Time": earley_time,
+        "Top-Down Parses": td_count,
+        "Top-Down Time": td_time
+    })
+
+df = pd.DataFrame(results)
+
+print("30 SENTENCE TEST RESULTS")
+
+display(df)
+
+print("\nAverage Earley Time:",
+      df["Earley Time"].mean())
+
+print("Average Top-Down Time:",
+      df["Top-Down Time"].mean())
+
+
+# Performance graph
+
+plt.figure(figsize=(9, 5))
+
+plt.plot(
+    range(1, 31),
+    df["Chart States"],
+    marker="o"
+)
+
+plt.xlabel("Sentence Number")
+plt.ylabel("Number of Chart States")
+plt.title("Earley Parser Performance")
+
+plt.grid()
+plt.show()
