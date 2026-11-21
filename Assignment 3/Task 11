@@ -1,0 +1,54 @@
+import pandas as pd
+
+comparison = {
+    "Parser": [
+        "Top-Down Parser",
+        "Earley Parser",
+        "PCFG Parser"
+    ],
+
+    "Method": [
+        "Recursive Descent",
+        "Dynamic Programming",
+        "Probabilistic Parsing"
+    ],
+
+    "Ambiguity Handling": [
+        "Backtracking",
+        "Multiple Parse Trees",
+        "Best Probability"
+    ],
+
+    "Advantages": [
+        "Simple and easy",
+        "Handles left recursion",
+        "Selects likely parse"
+    ],
+
+    "Disadvantages": [
+        "Repeated calculations",
+        "More memory required",
+        "Needs training data"
+    ]
+}
+
+df = pd.DataFrame(comparison)
+
+print("PARSER COMPARISON")
+
+display(df)
+
+print("\nRECOMMENDATION")
+
+print("""
+The recommended design for the student helpdesk is:
+
+Feature-Based CFG + Earley Parser + PCFG.
+
+CFG defines sentence structures.
+Feature structures handle agreement.
+Earley handles ambiguous and recursive sentences.
+PCFG selects the most probable parse.
+
+This combination provides better coverage and flexibility.
+""")
